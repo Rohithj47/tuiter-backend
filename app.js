@@ -16,21 +16,41 @@ mongoose.connect(MONGOURI);
 const app = express();
 const PORT = 4000;
 // Middleware
-app.use(json());
-app.use(
-  session({
-    secret: "string",
-    resave: false,
-    saveUninitialized: true,
-  })
-);
+app.set("trust proxy", 1);
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:3000",
+    origin: "https://tangerine-tanuki-827f92.netlify.app",
+    // origin: "http://localhost:3000",
   })
 );
+app.use(
+  session({
+    secret: "any string",
+    resave: false,
+    proxy: true,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: "none",
+      secure: true,
+    },
+  })
+);
+app.use(json());
 app.use(morgan("short"))
+// app.use(
+//   session({
+//     secret: "string",
+//     resave: false,
+//     saveUninitialized: true,
+//   })
+// );
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: "http://localhost:3000",
+//   })
+// );
 
 HelloController(app);
 UserController(app);
