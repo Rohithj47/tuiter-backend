@@ -1,53 +1,41 @@
-import express, { json } from 'express';
-import session from 'express-session';
-import cors from 'cors'
-import HelloController from './controllers/hello-controller.js';
-import UserController from './users/users-controller.js';
-import tuitsController from './controllers/tuits/tuits-controller.js';
-import AuthController from './users/auth-controller.js';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import express, { json } from "express";
+import session from "express-session";
+import mongoose from "mongoose";
+import cors from "cors";
+import HelloController from "./controllers/hello-controller.js";
+import UserController from "./users/users-controller.js";
+import tuitsController from "./controllers/tuits/tuits-controller.js";
+import AuthController from "./users/auth-controller.js";
+import dotenv from "dotenv";
+import morgan from "morgan";
 dotenv.config();
-import morgan from 'morgan';
-
-
+const MONGOURI =
+  process.env.MONGOURI || "mongodb://127.0.0.1:27017/tuiter";
+mongoose.connect(MONGOURI);
 
 const app = express();
 const PORT = 4000;
-
-
-mongoose.connect(process.env.MONGOURI)
-  .then(() => {
-    console.log("Connected to DB");
-  })
-  .catch((err) => {
-    console.log(`Not connected to DB - ${err}`)
-  });
-
 // Middleware
-app.use(
-  cors()
-)
 app.use(json());
 app.use(
   session({
     secret: "string",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
   })
-)
-// app.use(
-//   cors({
-//     credentials: true,
-//     origin: "http://localhost:3000"
-//   })
-// )
+);
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
 app.use(morgan("short"))
 
-HelloController(app)
-UserController(app)
-tuitsController(app)
-AuthController(app)
+HelloController(app);
+UserController(app);
+tuitsController(app);
+AuthController(app);
 
 // Start the server
 app.listen(PORT, () => {
